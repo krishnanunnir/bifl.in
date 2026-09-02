@@ -50,25 +50,24 @@ export default async function BlogPostPage({
   if (!post) notFound();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8f6f0] text-[#1c1917]">
+    <div className="min-h-screen flex flex-col bg-white text-slate-900">
       <SiteHeader />
-      <main id="main-content" className="site-main mx-auto w-full max-w-3xl px-4 py-8 sm:px-8 sm:py-12">
-        <nav aria-label="Breadcrumbs" className="mb-6 font-mono text-xs text-[#78716c]">
-          <ol className="flex items-center gap-2">
+      <main id="main-content" className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12 space-y-8">
+        <nav aria-label="Breadcrumbs" className="text-xs text-slate-400">
+          <ol className="flex items-center gap-1.5">
             <li>
-              <Link href="/blog" className="hover:underline text-[#8c3b2b]">
-                Guides & Essays
+              <Link href="/blog" className="hover:text-slate-900">
+                Guides
               </Link>
             </li>
-            <li>›</li>
-            <li className="text-[#1c1917] font-semibold truncate max-w-xs">{post.title}</li>
+            <li>/</li>
+            <li className="text-slate-900 font-medium truncate max-w-xs">{post.title}</li>
           </ol>
         </nav>
 
-        <article className="rounded-xl border border-[#e2dcd2] bg-[#ffffff] p-6 sm:p-10 shadow-sm">
-          <header className="border-b border-[#ede7dc] pb-6">
-            <p className="font-mono text-xs font-bold uppercase tracking-wider text-[#8a6325]">
-              Published{" "}
+        <article className="space-y-6">
+          <header className="space-y-3 pb-6 border-b border-slate-100">
+            <p className="text-xs text-slate-400 font-mono">
               {post.publishedAt
                 ? new Date(post.publishedAt).toLocaleDateString("en-IN", {
                     year: "numeric",
@@ -77,27 +76,21 @@ export default async function BlogPostPage({
                   })
                 : "Editorial"}
             </p>
-            <h1 className="font-display mt-2 text-3xl font-bold tracking-tight text-[#1c1917] sm:text-4xl leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 leading-tight">
               {post.title}
             </h1>
-            <p className="mt-3 text-base text-[#57534e] leading-relaxed italic">{post.excerpt}</p>
+            <p className="text-base text-slate-500 leading-relaxed italic">{post.excerpt}</p>
           </header>
 
-          <div className="mt-8">
+          <div className="pt-2">
             <MarkdownContent content={post.bodyMarkdown} />
           </div>
 
-          <footer className="mt-10 border-t border-[#ede7dc] pt-6 flex items-center justify-between">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-1 font-bold text-xs font-mono uppercase text-[#8c3b2b] hover:underline"
-            >
-              ← Back to All Guides
+          <footer className="mt-12 border-t border-slate-100 pt-6 flex items-center justify-between text-xs font-semibold">
+            <Link href="/blog" className="text-slate-900 hover:underline">
+              ← All Guides
             </Link>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1 font-bold text-xs font-mono uppercase text-[#8c3b2b] hover:underline"
-            >
+            <Link href="/" className="text-slate-900 hover:underline">
               Browse Catalog →
             </Link>
           </footer>

@@ -52,39 +52,31 @@ export default async function CategoryPage({
   const items = getItemsByCategory(category.slug);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8f6f0] text-[#1c1917]">
+    <div className="min-h-screen flex flex-col bg-white text-slate-900">
       <SiteHeader />
-      <main id="main-content" className="site-main mx-auto w-full max-w-5xl px-4 py-8 sm:px-8 sm:py-12">
+      <main id="main-content" className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         {/* Breadcrumb Navigation */}
-        <nav aria-label="Breadcrumbs" className="mb-6 font-mono text-xs text-[#78716c]">
-          <ol className="flex items-center gap-2">
+        <nav aria-label="Breadcrumbs" className="mb-4 text-xs text-slate-400">
+          <ol className="flex items-center gap-1.5">
             <li>
-              <Link href="/" className="hover:underline text-[#8c3b2b]">
+              <Link href="/" className="hover:text-slate-900">
                 Home
               </Link>
             </li>
-            <li>›</li>
-            <li className="text-[#1c1917] font-semibold">{category.name}</li>
+            <li>/</li>
+            <li className="text-slate-900 font-medium">{category.name}</li>
           </ol>
         </nav>
 
-        {/* Category Hero Header */}
-        <header className="rounded-2xl border border-[#e2dcd2] bg-[#ffffff] p-6 sm:p-8 shadow-sm">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl" aria-hidden="true">
-              {category.icon}
-            </span>
-            <div>
-              <p className="font-mono text-xs uppercase tracking-wider text-[#8a6325] font-bold">
-                Category Directory
-              </p>
-              <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-[#1c1917]">
-                {category.name}
-              </h1>
-            </div>
+        {/* Minimal Category Header */}
+        <header className="space-y-2 pb-6 border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <span className="text-2xl">{category.icon}</span>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+              {category.name}
+            </h1>
           </div>
-
-          <p className="mt-4 text-sm sm:text-base leading-relaxed text-[#57534e]">
+          <p className="text-sm text-slate-500 max-w-2xl leading-relaxed">
             {category.description}
           </p>
         </header>

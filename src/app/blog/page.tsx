@@ -8,12 +8,11 @@ import { SITE_NAME, absoluteUrl } from "@/lib/seo/site";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Care Guides & Engineering Essays — Buy It For Life India",
-  description:
-    "In-depth guides on seasoning Indian cast iron, maintaining mechanical watches, conditioning full-grain leather, and understanding generational metallurgy.",
+  title: "Care Guides & Essays — Buy It For Life India",
+  description: "In-depth guides on maintaining Indian cast iron, mechanical watches, and full-grain leather.",
   alternates: { canonical: "/blog" },
   openGraph: {
-    title: "Care Guides & Engineering Essays — bifl.in",
+    title: "Care Guides & Essays — bifl.in",
     description: "In-depth guides on maintaining Indian heirloom goods.",
     url: absoluteUrl("/blog"),
     siteName: SITE_NAME,
@@ -24,50 +23,48 @@ export default async function BlogIndexPage() {
   const posts = await getAllPublishedBlogPosts();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8f6f0] text-[#1c1917]">
+    <div className="min-h-screen flex flex-col bg-white text-slate-900">
       <SiteHeader />
-      <main id="main-content" className="site-main mx-auto w-full max-w-4xl px-4 py-8 sm:px-8 sm:py-12">
-        <div className="directory-heading mb-8">
-          <div>
-            <p className="eyebrow text-xs uppercase font-mono tracking-widest text-[#8a6325] font-semibold mb-1">
-              Knowledge & Maintenance
-            </p>
-            <h1 className="font-display">Care Guides & Essays</h1>
-          </div>
-          <p>{posts.length} articles</p>
+      <main id="main-content" className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-12 space-y-8">
+        <div className="space-y-2 pb-6 border-b border-slate-100">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+            Care Guides & Essays
+          </h1>
+          <p className="text-sm text-slate-500">
+            Practical care, engineering teardowns, and maintenance tips for Indian goods.
+          </p>
         </div>
 
-        <div className="grid gap-6">
+        <div className="space-y-6">
           {posts.map((post) => (
             <article
               key={post.slug}
-              className="rounded-xl border border-[#e2dcd2] bg-[#ffffff] p-6 shadow-sm transition-all hover:border-[#8c3b2b]/40 hover:shadow-md"
+              className="simple-card p-6 space-y-2 group"
             >
-              <div className="flex items-center justify-between text-xs font-mono text-[#78716c]">
-                <span>
-                  {post.publishedAt
-                    ? new Date(post.publishedAt).toLocaleDateString("en-IN", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })
-                    : "Curated Guide"}
-                </span>
-                <span className="text-[#8c3b2b] uppercase tracking-wider font-bold">Heirloom Guide</span>
-              </div>
+              <span className="text-xs text-slate-400">
+                {post.publishedAt
+                  ? new Date(post.publishedAt).toLocaleDateString("en-IN", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })
+                  : "Guide"}
+              </span>
 
-              <h2 className="font-display mt-2 text-2xl font-bold text-[#1c1917] hover:text-[#8c3b2b] transition-colors">
+              <h2 className="text-lg font-bold text-slate-900 group-hover:text-slate-700">
                 <Link href={`/blog/${post.slug}`}>{post.title}</Link>
               </h2>
 
-              <p className="mt-2.5 text-sm leading-relaxed text-[#57534e]">{post.excerpt}</p>
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+                {post.excerpt}
+              </p>
 
-              <div className="mt-4">
+              <div className="pt-2">
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="font-mono text-xs font-bold uppercase tracking-wider text-[#8c3b2b] hover:underline"
+                  className="text-xs font-semibold text-slate-900 hover:underline"
                 >
-                  Read Full Guide →
+                  Read Guide →
                 </Link>
               </div>
             </article>

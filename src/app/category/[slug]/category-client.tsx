@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { CategoryMeta, Item } from "@/lib/catalog/types";
-import { durabilityColor, durabilityTierLabel } from "@/lib/catalog/durability";
 import { TrackedExternalLink } from "@/components/tracked-external-link";
 
 export function CategoryClient({
@@ -19,7 +18,6 @@ export function CategoryClient({
   const [materialFilter, setMaterialFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("score");
 
-  // Extract available materials in this category
   const availableMaterials = useMemo(() => {
     const set = new Set<string>();
     for (const item of initialItems) {
@@ -35,17 +33,14 @@ export function CategoryClient({
   const filteredItems = useMemo(() => {
     let list = [...initialItems];
 
-    // Status filter
     if (statusFilter !== "All") {
       list = list.filter((i) => i.status === statusFilter);
     }
 
-    // Material filter
     if (materialFilter !== "all") {
       list = list.filter((i) => i.tags?.some((t) => t.name === materialFilter));
     }
 
-    // Price filter
     if (priceFilter === "under-2000") {
       list = list.filter((i) => (i.minNumericPrice ?? 0) <= 2000);
     } else if (priceFilter === "2000-5000") {
@@ -60,7 +55,6 @@ export function CategoryClient({
       list = list.filter((i) => (i.minNumericPrice ?? 0) > 15000);
     }
 
-    // Sorting
     if (sortBy === "score") {
       list.sort((a, b) => {
         const scoreA = a.variants[0]?.durabilityScore ?? 0;
@@ -77,22 +71,22 @@ export function CategoryClient({
   }, [initialItems, statusFilter, materialFilter, priceFilter, sortBy]);
 
   return (
-    <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[16rem_minmax(0,1fr)]">
-      {/* Amazon-style Faceted Sidebar Filters */}
-      <aside className="rounded-xl border border-[#e2dcd2] bg-[#ffffff] p-5 shadow-sm space-y-6 h-fit sticky top-20">
+    <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[14rem_minmax(0,1fr)]">
+      {/* Simple, Clean Sidebar Filters */}
+      <aside className="space-y-6 h-fit sticky top-20 text-sm">
         <div>
-          <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[#78716c] mb-3">
-            Production Status
+          <h3 className="font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2.5">
+            Status
           </h3>
-          <div className="space-y-1.5 text-xs font-medium text-[#44403c]">
+          <div className="space-y-1.5 text-xs text-slate-700">
             {["All", "In Production", "Heritage"].map((s) => (
-              <label key={s} className="flex items-center gap-2 cursor-pointer hover:text-[#1c1917]">
+              <label key={s} className="flex items-center gap-2 cursor-pointer hover:text-slate-900">
                 <input
                   type="radio"
                   name="status"
                   checked={statusFilter === s}
                   onChange={() => setStatusFilter(s)}
-                  className="accent-[#8c3b2b]"
+                  className="accent-slate-900"
                 />
                 <span>{s === "All" ? "All Items" : s}</span>
               </label>
@@ -100,11 +94,11 @@ export function CategoryClient({
           </div>
         </div>
 
-        <div className="border-t border-[#ede7dc] pt-5">
-          <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[#78716c] mb-3">
-            Price Range
+        <div className="border-t border-slate-100 pt-5">
+          <h3 className="font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2.5">
+            Price
           </h3>
-          <div className="space-y-1.5 text-xs font-medium text-[#44403c]">
+          <div className="space-y-1.5 text-xs text-slate-700">
             {[
               { id: "all", label: "All Prices" },
               { id: "under-2000", label: "Under ₹2,000" },
@@ -112,13 +106,13 @@ export function CategoryClient({
               { id: "5000-15000", label: "₹5,000 – ₹15,000" },
               { id: "above-15000", label: "Above ₹15,000" },
             ].map((p) => (
-              <label key={p.id} className="flex items-center gap-2 cursor-pointer hover:text-[#1c1917]">
+              <label key={p.id} className="flex items-center gap-2 cursor-pointer hover:text-slate-900">
                 <input
                   type="radio"
                   name="price"
                   checked={priceFilter === p.id}
                   onChange={() => setPriceFilter(p.id)}
-                  className="accent-[#8c3b2b]"
+                  className="accent-slate-900"
                 />
                 <span>{p.label}</span>
               </label>
@@ -127,29 +121,29 @@ export function CategoryClient({
         </div>
 
         {availableMaterials.length > 0 && (
-          <div className="border-t border-[#ede7dc] pt-5">
-            <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[#78716c] mb-3">
-              Material & Core Alloy
+          <div className="border-t border-slate-100 pt-5">
+            <h3 className="font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2.5">
+              Material
             </h3>
-            <div className="space-y-1.5 text-xs font-medium text-[#44403c]">
-              <label className="flex items-center gap-2 cursor-pointer hover:text-[#1c1917]">
+            <div className="space-y-1.5 text-xs text-slate-700">
+              <label className="flex items-center gap-2 cursor-pointer hover:text-slate-900">
                 <input
                   type="radio"
                   name="material"
                   checked={materialFilter === "all"}
                   onChange={() => setMaterialFilter("all")}
-                  className="accent-[#8c3b2b]"
+                  className="accent-slate-900"
                 />
                 <span>All Materials</span>
               </label>
               {availableMaterials.map((mat) => (
-                <label key={mat} className="flex items-center gap-2 cursor-pointer hover:text-[#1c1917]">
+                <label key={mat} className="flex items-center gap-2 cursor-pointer hover:text-slate-900">
                   <input
                     type="radio"
                     name="material"
                     checked={materialFilter === mat}
                     onChange={() => setMaterialFilter(mat)}
-                    className="accent-[#8c3b2b]"
+                    className="accent-slate-900"
                   />
                   <span>{mat}</span>
                 </label>
@@ -158,7 +152,7 @@ export function CategoryClient({
           </div>
         )}
 
-        <div className="border-t border-[#ede7dc] pt-5">
+        <div className="border-t border-slate-100 pt-4">
           <button
             onClick={() => {
               setStatusFilter("All");
@@ -166,158 +160,104 @@ export function CategoryClient({
               setMaterialFilter("all");
               setSortBy("score");
             }}
-            className="w-full text-center text-xs font-semibold text-[#8c3b2b] hover:underline cursor-pointer"
+            className="text-xs text-slate-500 hover:text-slate-900 underline cursor-pointer"
           >
             Reset Filters
           </button>
         </div>
       </aside>
 
-      {/* Main Filtered Product Grid */}
-      <div className="space-y-6">
-        {/* Results Bar + Sort Control */}
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-[#e2dcd2] bg-[#ffffff] px-4 py-3 text-xs">
-          <span className="font-mono text-[#78716c]">
-            Showing <strong className="text-[#1c1917]">{filteredItems.length}</strong> verified BIFL items
-          </span>
+      {/* Product Grid Area */}
+      <div className="space-y-4">
+        {/* Results Count & Sort */}
+        <div className="flex items-center justify-between gap-4 pb-3 border-b border-slate-100 text-xs text-slate-500">
+          <span>{filteredItems.length} products found</span>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[#78716c] uppercase">Sort by:</span>
+            <span>Sort:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="rounded border border-[#d6cebf] bg-[#faf8f5] px-2.5 py-1 text-xs font-semibold text-[#1c1917] focus:outline-none"
+              className="rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 font-medium focus:outline-none"
             >
-              <option value="score">Highest Durability Score</option>
+              <option value="score">Top Rated</option>
               <option value="price-asc">Price: Low to High</option>
               <option value="price-desc">Price: High to Low</option>
             </select>
           </div>
         </div>
 
-        {/* Product Cards */}
         {filteredItems.length === 0 ? (
-          <div className="rounded-xl border border-[#e2dcd2] bg-[#ffffff] p-10 text-center">
-            <h3 className="font-display text-lg font-bold text-[#1c1917]">No items match these filters</h3>
-            <p className="mt-2 text-xs text-[#78716c]">Try widening your price or material selection.</p>
+          <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
+            <p className="text-sm font-medium text-slate-900">No products match this selection</p>
             <button
               onClick={() => {
                 setStatusFilter("All");
                 setPriceFilter("all");
                 setMaterialFilter("all");
               }}
-              className="mt-4 inline-block text-xs font-bold text-[#8c3b2b] underline cursor-pointer"
+              className="mt-2 text-xs text-slate-600 underline cursor-pointer"
             >
-              Clear all filters
+              Clear filters
             </button>
           </div>
         ) : (
-          <div className="grid gap-6">
-            {filteredItems.map((item) => {
-              const mainVariant = item.variants[0];
-              const avgScore = mainVariant?.durabilityScore ?? 4.8;
-              return (
-                <article
-                  key={item.slug}
-                  className="rounded-xl border border-[#e2dcd2] bg-[#ffffff] p-5 sm:p-6 shadow-sm hover:border-[#8c3b2b]/40 hover:shadow-md transition-all grid grid-cols-1 sm:grid-cols-[9rem_minmax(0,1fr)] gap-5 items-start"
-                >
-                  <Link href={`/items/${item.slug}`} className="block">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {filteredItems.map((item) => (
+              <article
+                key={item.slug}
+                className="simple-card p-4 flex flex-col justify-between"
+              >
+                <div>
+                  <Link href={`/items/${item.slug}`} className="block relative aspect-4/3 overflow-hidden rounded-lg bg-slate-50 border border-slate-100 mb-3">
                     <Image
                       src={item.image}
                       alt={item.title}
-                      width={200}
-                      height={260}
-                      className="w-full sm:w-36 h-48 rounded-lg object-cover border border-[#e2dcd2] bg-[#f8f6f0]"
+                      fill
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                      className="object-cover"
                     />
                   </Link>
 
-                  <div className="space-y-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#f5f0e8] text-[#8c3b2b]">
-                          {item.system}
-                        </span>
-                        {item.isTopPick && (
-                          <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#1e6b45] text-white">
-                            ★ Top Pick
-                          </span>
-                        )}
-                      </div>
-                      <span className="font-mono text-xs font-bold text-[#1c1917] bg-[#faf8f5] px-2 py-1 rounded border border-[#e2dcd2]">
-                        {item.priceEstimate ?? item.priceRange}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h2 className="font-display text-xl sm:text-2xl font-bold text-[#1c1917] hover:text-[#8c3b2b] transition-colors leading-tight">
-                        <Link href={`/items/${item.slug}`}>{item.title}</Link>
-                      </h2>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-[#78716c] mt-0.5">
-                        By {item.maker} · {item.yearEstablished}
-                      </p>
-                    </div>
-
-                    <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed line-clamp-2">
-                      {item.desc}
-                    </p>
-
-                    {/* Durability & Lifespan Meter */}
-                    <div className="flex flex-wrap items-center gap-3 text-xs">
-                      <span
-                        className="font-mono font-bold px-2 py-0.5 rounded text-white text-[11px]"
-                        style={{ backgroundColor: durabilityColor(avgScore) }}
-                      >
-                        {avgScore.toFixed(2)} / 5.00 Durability
-                      </span>
-                      <span className="text-[#78716c] text-[11px] font-medium">
-                        Lifespan: <strong className="text-[#1c1917]">{mainVariant?.expectedLifespan ?? "25+ Years"}</strong>
-                      </span>
-                    </div>
-
-                    {/* Multi-Retailer Action Bar (Amazon, Flipkart, Croma, Reliance Digital) */}
-                    <div className="border-t border-[#ede7dc] pt-3 flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                        <span className="font-mono text-[10px] uppercase tracking-wider text-[#78716c]">
-                          Buy at:
-                        </span>
-                        {item.retailLinks.map((retailer) => {
-                          const isAmazon = retailer.platform.includes("Amazon");
-                          const isFlipkart = retailer.platform.includes("Flipkart");
-                          const isCroma = retailer.platform.includes("Croma");
-                          const isReliance = retailer.platform.includes("Reliance");
-
-                          let btnStyle = "bg-[#f5f0e8] text-[#44403c] border-[#d6cebf]";
-                          if (isAmazon) btnStyle = "bg-[#ff9900]/15 text-[#854d0e] border-[#ff9900]/40 font-bold";
-                          if (isFlipkart) btnStyle = "bg-[#2874f0]/10 text-[#1e40af] border-[#2874f0]/30 font-bold";
-                          if (isCroma) btnStyle = "bg-[#00e9bf]/15 text-[#0f766e] border-[#00e9bf]/40 font-bold";
-                          if (isReliance) btnStyle = "bg-[#e11b22]/10 text-[#b91c1c] border-[#e11b22]/30 font-bold";
-
-                          return (
-                            <TrackedExternalLink
-                              key={retailer.platform}
-                              href={retailer.url}
-                              platform={retailer.platform}
-                              itemSlug={item.slug}
-                              location="category_card_retailer"
-                              className={`inline-flex items-center gap-1 rounded px-2.5 py-1 text-xs border ${btnStyle} hover:opacity-80 transition-opacity`}
-                            >
-                              <span>{retailer.platform}</span>
-                              {retailer.price && <span className="text-[10px] opacity-80">({retailer.price})</span>}
-                            </TrackedExternalLink>
-                          );
-                        })}
-                      </div>
-
-                      <Link
-                        href={`/items/${item.slug}`}
-                        className="font-mono text-xs font-bold uppercase tracking-wider text-[#8c3b2b] hover:underline"
-                      >
-                        Specs & Guide →
-                      </Link>
-                    </div>
+                  <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                    <span>{item.maker}</span>
+                    <span className="font-semibold text-slate-900">{item.priceEstimate ?? item.priceRange}</span>
                   </div>
-                </article>
-              );
-            })}
+
+                  <h3 className="font-semibold text-slate-900 text-sm leading-snug">
+                    <Link href={`/items/${item.slug}`}>{item.title}</Link>
+                  </h3>
+
+                  <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {item.retailLinks.slice(0, 3).map((r) => (
+                      <TrackedExternalLink
+                        key={r.platform}
+                        href={r.url}
+                        platform={r.platform}
+                        itemSlug={item.slug}
+                        location="category_card"
+                        className="retailer-pill"
+                      >
+                        <span>{r.platform}</span>
+                        {r.price && <span className="text-[10px] text-slate-400">· {r.price}</span>}
+                      </TrackedExternalLink>
+                    ))}
+                  </div>
+
+                  <Link
+                    href={`/items/${item.slug}`}
+                    className="text-xs font-semibold text-slate-700 hover:text-slate-900"
+                  >
+                    Specs →
+                  </Link>
+                </div>
+              </article>
+            ))}
           </div>
         )}
       </div>

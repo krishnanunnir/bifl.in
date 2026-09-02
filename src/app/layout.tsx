@@ -28,7 +28,7 @@ const fraunces = Fraunces({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#f8f6f0",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
 };
@@ -91,10 +91,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en-IN" className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable}`}>
-      <body className="min-h-screen flex flex-col antialiased bg-[#f8f6f0] text-[#1c1917]">
-        <a href="#main-content" className="skip-link font-mono text-xs">
-          Skip to main content
-        </a>
+      <body className="min-h-screen flex flex-col antialiased bg-white text-slate-900">
         {children}
         <AnalyticsConsent />
       </body>

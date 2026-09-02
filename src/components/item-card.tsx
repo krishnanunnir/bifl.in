@@ -45,6 +45,7 @@ export function ItemCard({
           height={340}
           sizes="(max-width: 640px) 104px, 136px"
           loading={priority ? "eager" : "lazy"}
+          unoptimized
         />
       </Link>
 

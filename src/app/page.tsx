@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ItemCard } from "@/components/item-card";
 import { CATEGORIES } from "@/lib/catalog/categories";
-import { getTopPicks } from "@/data/items";
+import { getCatalogPage } from "@/lib/db/queries/catalog";
 import { SharpSparkle } from "@/components/sharp-star";
 import {
   SITE_NAME,
@@ -15,7 +15,7 @@ import {
   serializeJsonLd,
 } from "@/lib/seo/site";
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: `${SITE_TITLE}`,
@@ -36,8 +36,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
-  const topPicks = getTopPicks();
+export default async function Home() {
+  const { items: topPicks } = await getCatalogPage(1);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -72,8 +72,8 @@ export default function Home() {
       />
       <SiteHeader />
 
-      <main id="main-content" className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12 space-y-12">
-        {/* Minimal Hero Header */}
+      <main id="main-content" className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12 space-y-10">
+        {/* Hero Header */}
         <section className="space-y-4 max-w-3xl">
           <div className="flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-slate-500">
             <SharpSparkle size={13} fill="#f59e0b" />
@@ -102,7 +102,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Top 10 Picks for Today (Exclusive Homepage Showcase) */}
+        {/* Top 10 Picks Showcase */}
         <section aria-labelledby="top-picks-heading" className="space-y-6">
           <div className="flex items-end justify-between pb-3 border-b border-slate-200">
             <div>
@@ -118,7 +118,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className={topPicks.length === 1 ? "max-w-2xl" : "grid grid-cols-1 md:grid-cols-2 gap-6"}>
             {topPicks.map((item, idx) => (
               <ItemCard key={item.slug} item={item} priority={idx < 2} position={idx + 1} />
             ))}

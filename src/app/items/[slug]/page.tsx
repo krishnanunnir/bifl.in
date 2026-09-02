@@ -118,6 +118,7 @@ export default async function ItemDetailPage({
               alt={item.title}
               fill
               priority
+              unoptimized
               className="object-cover"
             />
           </div>

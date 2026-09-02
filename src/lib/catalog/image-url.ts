@@ -2,19 +2,17 @@ import type { Item } from "./types";
 
 export function resolveImageUrl(imagePath?: string | null): string {
   if (!imagePath) {
-    return "/images/placeholder.svg";
+    return "https://rpyjfiwqicynqtyrqhjy.supabase.co/storage/v1/object/public/products/iphone-17.jpg";
   }
 
-  if (imagePath.startsWith("http://") || imagePath.startsWith("https://") || imagePath.startsWith("/")) {
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
     return imagePath;
   }
 
-  const baseSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (baseSupabaseUrl) {
-    return `${baseSupabaseUrl.replace(/\/+$/, "")}/storage/v1/object/public/images/${imagePath.replace(/^\/+/, "")}`;
-  }
+  const baseSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://rpyjfiwqicynqtyrqhjy.supabase.co";
+  const cleanPath = imagePath.replace(/^\/+/, "").replace(/^images\/products\//, "").replace(/^images\//, "");
 
-  return `/images/${imagePath.replace(/^\/+/, "")}`;
+  return `${baseSupabaseUrl.replace(/\/+$/, "")}/storage/v1/object/public/products/${cleanPath}`;
 }
 
 export function normalizeItemImages(item: Item): Item {

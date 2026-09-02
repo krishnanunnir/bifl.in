@@ -1,12 +1,12 @@
 import type { NextConfig } from "next";
 
-const rawSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://bifl.supabase.co";
+const rawSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://rpyjfiwqicynqtyrqhjy.supabase.co";
 
 let supabaseUrl: URL;
 try {
   supabaseUrl = new URL(rawSupabaseUrl);
 } catch {
-  supabaseUrl = new URL("https://bifl.supabase.co");
+  supabaseUrl = new URL("https://rpyjfiwqicynqtyrqhjy.supabase.co");
 }
 
 const nextConfig: NextConfig = {
@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: supabaseUrl.hostname,
         port: "",
-        pathname: "/storage/v1/object/public/images/**",
+        pathname: "/storage/v1/object/public/**",
         search: "",
       },
       {

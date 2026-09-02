@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ItemCard } from "@/components/item-card";
 import { CATEGORIES } from "@/lib/catalog/categories";
-import { items as allItems, getTopPicks, getItemsByCategory } from "@/data/items";
+import { getTopPicks } from "@/data/items";
 import { SharpSparkle } from "@/components/sharp-star";
 import {
   SITE_NAME,
@@ -52,7 +52,7 @@ export default function Home() {
       },
       {
         "@type": "ItemList",
-        name: "Buy It For Life India Top Picks",
+        name: "Buy It For Life India — Top 10 Picks Today",
         numberOfItems: topPicks.length,
         itemListElement: topPicks.map((item, index) => ({
           "@type": "ListItem",
@@ -72,8 +72,8 @@ export default function Home() {
       />
       <SiteHeader />
 
-      <main id="main-content" className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12 space-y-16">
-        {/* Sharp Editorial Hero Header */}
+      <main id="main-content" className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12 space-y-12">
+        {/* Minimal Hero Header */}
         <section className="space-y-4 max-w-3xl">
           <div className="flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-slate-500">
             <SharpSparkle size={13} fill="#f59e0b" />
@@ -84,10 +84,10 @@ export default function Home() {
           </h1>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
             A curated index of durable, repairable, and generational goods built to last in India.
-            Cast iron, pure bronze, full-grain leather, mechanical watches, and heavy tools with lifetime spares.
+            Zero planned obsolescence, zero synthetic coatings, and lifetime spare parts.
           </p>
 
-          {/* Sharp Category Navigation Pills */}
+          {/* Category Navigation Pills */}
           <div className="pt-2 flex flex-wrap items-center gap-2.5">
             {CATEGORIES.map((cat) => (
               <Link
@@ -102,64 +102,27 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Top Picks Section */}
-        <section aria-labelledby="top-picks-heading">
-          <div className="flex items-end justify-between mb-6 pb-2.5 border-b border-slate-200">
+        {/* Top 10 Picks for Today (Exclusive Homepage Showcase) */}
+        <section aria-labelledby="top-picks-heading" className="space-y-6">
+          <div className="flex items-end justify-between pb-3 border-b border-slate-200">
             <div>
-              <div className="flex items-center gap-1.5">
-                <SharpSparkle size={14} fill="#f59e0b" />
-                <h2 id="top-picks-heading" className="font-display text-2xl font-bold text-slate-900">
-                  Top Generational Picks
+              <div className="flex items-center gap-2">
+                <SharpSparkle size={16} fill="#f59e0b" />
+                <h2 id="top-picks-heading" className="font-display text-2xl sm:text-3xl font-bold text-slate-900">
+                  Top 10 Picks for Today
                 </h2>
               </div>
-              <p className="text-xs text-slate-500 font-mono mt-0.5">Highest rated generational essentials</p>
+              <p className="text-xs text-slate-500 font-mono mt-1">
+                Curated daily · Highest overall BIFL durability and nationwide serviceability
+              </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {topPicks.slice(0, 6).map((item, idx) => (
+            {topPicks.map((item, idx) => (
               <ItemCard key={item.slug} item={item} priority={idx < 2} position={idx + 1} />
             ))}
           </div>
-        </section>
-
-        {/* Category-by-Category Sections */}
-        <section className="space-y-16" aria-labelledby="categories-heading">
-          <div className="flex items-center justify-between pb-2.5 border-b border-slate-200">
-            <h2 id="categories-heading" className="font-display text-2xl font-bold text-slate-900">
-              Browse by Discipline
-            </h2>
-          </div>
-
-          {CATEGORIES.map((category) => {
-            const categoryItems = getItemsByCategory(category.slug);
-            return (
-              <div key={category.slug} className="space-y-5">
-                <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">{category.icon}</span>
-                      <h3 className="font-display text-xl font-bold text-slate-900">{category.name}</h3>
-                    </div>
-                    <p className="text-xs text-slate-500 mt-0.5">{category.tagline}</p>
-                  </div>
-
-                  <Link
-                    href={`/category/${category.slug}`}
-                    className="font-mono text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-black underline underline-offset-4"
-                  >
-                    View all {categoryItems.length} items →
-                  </Link>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {categoryItems.slice(0, 2).map((item) => (
-                    <ItemCard key={item.slug} item={item} />
-                  ))}
-                </div>
-              </div>
-            );
-          })}
         </section>
       </main>
 

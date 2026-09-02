@@ -40,6 +40,14 @@ export type Tag = {
   isPrimary?: boolean;
 };
 
+export type BiflRatings = {
+  overall: number;       // e.g. 4.92
+  longevity: number;     // Build quality & decade-spanning endurance (e.g. 5.0)
+  repairability: number; // User-serviceability, zero-glue mechanical design (e.g. 4.9)
+  service: number;       // After-sales service & nationwide spare parts in India (e.g. 4.8)
+  material: number;      // Pure metallurgy, full-grain leather, non-toxic ageing (e.g. 5.0)
+};
+
 export const CANONICAL_TAGS: Array<{ slug: string; name: string; category: TagCategory }> = [
   // Materials
   { slug: "cast-iron", name: "Pure Cast Iron", category: "material" },
@@ -119,6 +127,8 @@ export type Item = {
   status: ItemStatus;
   yearEstablished: string;
   desc: string;
+  biflSummary?: string;
+  biflRatings?: BiflRatings;
   isTopPick?: boolean;
   priceEstimate?: string;
   priceRange?: string;

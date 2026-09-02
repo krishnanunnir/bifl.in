@@ -14,16 +14,20 @@ export function ItemCard({
   priority?: boolean;
   position?: number;
 }) {
-  let avgRating = 4.85;
-  let editionCount = 1;
+  let overallScore = 4.85;
 
-  if ("variants" in item && Array.isArray(item.variants) && item.variants.length > 0) {
-    avgRating =
+  if ("biflRatings" in item && item.biflRatings?.overall) {
+    overallScore = item.biflRatings.overall;
+  } else if ("variants" in item && Array.isArray(item.variants) && item.variants.length > 0) {
+    overallScore =
       item.variants.reduce((acc, v) => acc + (v.durabilityScore ?? 4.8), 0) / item.variants.length;
-    editionCount = item.variants.length;
-  } else if ("variantScores" in item && Array.isArray(item.variantScores) && item.variantScores.length > 0) {
-    avgRating = item.variantScores.reduce((acc, s) => acc + s, 0) / item.variantScores.length;
-    editionCount = (item as ItemSummary).variantCount ?? 1;
+  } else if (
+    "variantScores" in (item as any) &&
+    Array.isArray((item as any).variantScores) &&
+    (item as any).variantScores.length > 0
+  ) {
+    const scores = (item as any).variantScores as number[];
+    overallScore = scores.reduce((acc, s) => acc + s, 0) / scores.length;
   }
 
   return (
@@ -31,7 +35,7 @@ export function ItemCard({
       <Link
         href={`/items/${item.slug}`}
         className="series-cover-link"
-        aria-label={`View ${item.title} specs and models`}
+        aria-label={`View ${item.title} longevity guide`}
       >
         <Image
           className="series-cover"
@@ -74,9 +78,9 @@ export function ItemCard({
             </span>
           </div>
 
-          {/* Description */}
+          {/* Core BIFL Summary / Verdict */}
           <p className="mt-2 text-xs leading-relaxed text-slate-600 line-clamp-2 sm:text-sm">
-            {item.desc}
+            {item.biflSummary ?? item.desc}
           </p>
         </div>
 
@@ -101,11 +105,14 @@ export function ItemCard({
         </div>
       </div>
 
-      {/* Bottom bar with sharp cartoonish stars */}
+      {/* Bottom bar with overall sharp cartoonish star score */}
       <div className="series-books-link-wrap">
-        <SharpStarRating rating={avgRating} />
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono text-[10px] uppercase font-bold text-slate-400">Overall:</span>
+          <SharpStarRating rating={overallScore} size={13} />
+        </div>
         <Link className="series-books-link" href={`/items/${item.slug}`}>
-          View models & specs ({editionCount}) →
+          View BIFL Breakdown & Guide →
         </Link>
       </div>
     </article>

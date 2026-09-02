@@ -6,7 +6,8 @@ import { getItemBySlug, getAllItemSlugs } from "@/lib/db/queries/items";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { TrackedExternalLink } from "@/components/tracked-external-link";
-import { SharpStarRating, SharpSparkle } from "@/components/sharp-star";
+import { SharpSparkle, SharpStarRating } from "@/components/sharp-star";
+import { BiflBreakdown } from "@/components/bifl-breakdown";
 import { SITE_NAME, absoluteUrl, serializeJsonLd } from "@/lib/seo/site";
 
 export const revalidate = 3600;
@@ -26,7 +27,7 @@ export async function generateMetadata({
   if (!item) notFound();
 
   const title = `${item.title} — Buy It For Life India`;
-  const description = item.desc;
+  const description = item.biflSummary ?? item.desc;
   const canonicalPath = `/items/${item.slug}`;
 
   return {
@@ -52,16 +53,21 @@ export default async function ItemDetailPage({
   const item = await getItemBySlug(slug);
   if (!item) notFound();
 
-  const avgDurability =
-    item.variants.length > 0
-      ? item.variants.reduce((acc, v) => acc + v.durabilityScore, 0) / item.variants.length
-      : 4.85;
+  const defaultRatings = {
+    overall: 4.9,
+    longevity: 5.0,
+    repairability: 4.9,
+    service: 4.8,
+    material: 4.9,
+  };
+
+  const ratings = item.biflRatings ?? defaultRatings;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: item.title,
-    description: item.desc,
+    description: item.biflSummary ?? item.desc,
     image: item.image,
     brand: {
       "@type": "Brand",
@@ -103,9 +109,9 @@ export default async function ItemDetailPage({
           </ol>
         </nav>
 
-        {/* Sharp 2-Column Product Detail Layout */}
+        {/* Primary Hero Section: Image, Title, Maker, Price & Buy Buttons */}
         <div className="border border-slate-300 bg-white p-6 sm:p-8 shadow-[4px_4px_0_#cbd5e1] grid grid-cols-1 md:grid-cols-[16rem_minmax(0,1fr)] gap-8 items-start">
-          {/* Left: Product Image */}
+          {/* Product Image */}
           <div className="relative aspect-3/4 overflow-hidden border border-slate-300 bg-slate-50 shadow-[2px_2px_0_#e2e8f0]">
             <Image
               src={item.image}
@@ -116,7 +122,7 @@ export default async function ItemDetailPage({
             />
           </div>
 
-          {/* Right: Info & Buy Options */}
+          {/* Product Info & Buy Grid */}
           <div className="space-y-5">
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -143,23 +149,15 @@ export default async function ItemDetailPage({
               </div>
             </div>
 
-            {/* Durability Rating with Sharp Stars */}
-            <div className="flex items-center gap-3 border-y border-slate-200 py-2.5">
-              <span className="font-mono text-xs uppercase font-bold text-slate-500">
-                Durability:
-              </span>
-              <SharpStarRating rating={avgDurability} size={15} />
-              <span className="font-mono text-[11px] text-slate-500">/ 5.00</span>
-            </div>
-
+            {/* Quick Summary */}
             <p className="text-sm text-slate-700 leading-relaxed">
               {item.desc}
             </p>
 
             {/* Where to Buy Online Section */}
-            <div className="space-y-2 pt-2">
+            <div className="space-y-2 pt-1">
               <h2 className="font-mono text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Available at
+                Where to Buy Online
               </h2>
               <div className="flex flex-wrap gap-2">
                 {item.retailLinks.map((r) => (
@@ -178,41 +176,17 @@ export default async function ItemDetailPage({
                 ))}
               </div>
             </div>
-
-            {/* Quick Specs Grid */}
-            <div className="border-t border-slate-200 pt-4 space-y-2 text-xs">
-              <h2 className="font-mono font-bold text-slate-500 uppercase tracking-wider mb-2">
-                Specifications
-              </h2>
-              <div className="grid grid-cols-2 gap-2 text-slate-700">
-                <div className="p-2 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
-                  <span className="text-slate-500 font-mono block text-[10px] uppercase">System</span>
-                  <span className="font-bold text-slate-900">{item.system}</span>
-                </div>
-                <div className="p-2 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
-                  <span className="text-slate-500 font-mono block text-[10px] uppercase">Status</span>
-                  <span className="font-bold text-slate-900">{item.status}</span>
-                </div>
-                <div className="p-2 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
-                  <span className="text-slate-500 font-mono block text-[10px] uppercase">Expected Lifespan</span>
-                  <span className="font-bold text-slate-900">
-                    {item.variants[0]?.expectedLifespan ?? "25+ Years"}
-                  </span>
-                </div>
-                <div className="p-2 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
-                  <span className="text-slate-500 font-mono block text-[10px] uppercase">Warranty</span>
-                  <span className="font-bold text-slate-900">
-                    {item.variants[0]?.warranty ?? "Lifetime Spares"}
-                  </span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* Care & Maintenance */}
+        {/* BIFL Star Rating System & Verdict (Primary Evaluation) */}
+        <section aria-labelledby="bifl-score-heading">
+          <BiflBreakdown ratings={ratings} summary={item.biflSummary} />
+        </section>
+
+        {/* Care & Maintenance Guide */}
         {item.careGuide && (
-          <section className="border border-slate-300 bg-white p-6 sm:p-8 shadow-[4px_4px_0_#cbd5e1] space-y-3 max-w-3xl">
+          <section className="border border-slate-300 bg-white p-6 sm:p-8 shadow-[4px_4px_0_#cbd5e1] space-y-3">
             <div className="flex items-center gap-2">
               <SharpSparkle size={16} fill="#f59e0b" />
               <h2 className="font-display text-xl font-bold text-slate-900">
@@ -223,13 +197,43 @@ export default async function ItemDetailPage({
           </section>
         )}
 
-        {/* Variants / Models List */}
-        {item.variants.length > 1 && (
-          <section className="space-y-4">
+        {/* Secondary Section: Technical Specifications & Editions */}
+        <section className="space-y-6 pt-4 border-t border-slate-200">
+          <div>
             <h2 className="font-display text-xl font-bold text-slate-900">
-              Models & Editions ({item.variants.length})
+              Technical Specifications & Models
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <p className="text-xs text-slate-500 font-mono mt-0.5">
+              Material composition, warranties, and dimension specs
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="p-3 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
+              <span className="text-slate-500 font-mono block text-[10px] uppercase">System</span>
+              <span className="font-bold text-slate-900">{item.system}</span>
+            </div>
+            <div className="p-3 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
+              <span className="text-slate-500 font-mono block text-[10px] uppercase">Status</span>
+              <span className="font-bold text-slate-900">{item.status}</span>
+            </div>
+            <div className="p-3 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
+              <span className="text-slate-500 font-mono block text-[10px] uppercase">Expected Lifespan</span>
+              <span className="font-bold text-slate-900">
+                {item.variants[0]?.expectedLifespan ?? "25+ Years"}
+              </span>
+            </div>
+            <div className="p-3 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
+              <span className="text-slate-500 font-mono block text-[10px] uppercase">Warranty</span>
+              <span className="font-bold text-slate-900">
+                {item.variants[0]?.warranty ?? "Lifetime Spares"}
+              </span>
+            </div>
+          </div>
+
+          {/* Individual Models / Editions */}
+          {item.variants.length > 1 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
               {item.variants.map((v) => (
                 <div
                   key={v.variantNumber}
@@ -257,8 +261,8 @@ export default async function ItemDetailPage({
                 </div>
               ))}
             </div>
-          </section>
-        )}
+          )}
+        </section>
       </main>
 
       <SiteFooter />

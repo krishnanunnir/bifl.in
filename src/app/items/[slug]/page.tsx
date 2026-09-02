@@ -6,6 +6,7 @@ import { getItemBySlug, getAllItemSlugs } from "@/lib/db/queries/items";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { TrackedExternalLink } from "@/components/tracked-external-link";
+import { SharpStarRating, SharpSparkle } from "@/components/sharp-star";
 import { SITE_NAME, absoluteUrl, serializeJsonLd } from "@/lib/seo/site";
 
 export const revalidate = 3600;
@@ -51,6 +52,11 @@ export default async function ItemDetailPage({
   const item = await getItemBySlug(slug);
   if (!item) notFound();
 
+  const avgDurability =
+    item.variants.length > 0
+      ? item.variants.reduce((acc, v) => acc + v.durabilityScore, 0) / item.variants.length
+      : 4.85;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -79,28 +85,28 @@ export default async function ItemDetailPage({
 
       <main id="main-content" className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10 space-y-12">
         {/* Breadcrumb Navigation */}
-        <nav aria-label="Breadcrumbs" className="text-xs text-slate-400">
-          <ol className="flex items-center gap-1.5">
+        <nav aria-label="Breadcrumbs" className="font-mono text-xs text-slate-500">
+          <ol className="flex items-center gap-2">
             <li>
-              <Link href="/" className="hover:text-slate-900">
+              <Link href="/" className="hover:text-black underline">
                 Home
               </Link>
             </li>
-            <li>/</li>
+            <li>›</li>
             <li>
-              <Link href={`/category/${item.category}`} className="hover:text-slate-900 capitalize">
+              <Link href={`/category/${item.category}`} className="hover:text-black capitalize underline">
                 {item.category.replace("_", " ")}
               </Link>
             </li>
-            <li>/</li>
-            <li className="text-slate-900 font-medium truncate max-w-xs">{item.title}</li>
+            <li>›</li>
+            <li className="text-slate-900 font-bold truncate max-w-xs">{item.title}</li>
           </ol>
         </nav>
 
-        {/* Simple 2-Column Product Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+        {/* Sharp 2-Column Product Detail Layout */}
+        <div className="border border-slate-300 bg-white p-6 sm:p-8 shadow-[4px_4px_0_#cbd5e1] grid grid-cols-1 md:grid-cols-[16rem_minmax(0,1fr)] gap-8 items-start">
           {/* Left: Product Image */}
-          <div className="relative aspect-4/3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+          <div className="relative aspect-3/4 overflow-hidden border border-slate-300 bg-slate-50 shadow-[2px_2px_0_#e2e8f0]">
             <Image
               src={item.image}
               alt={item.title}
@@ -111,26 +117,48 @@ export default async function ItemDetailPage({
           </div>
 
           {/* Right: Info & Buy Options */}
-          <div className="space-y-6">
+          <div className="space-y-5">
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                {item.maker} · {item.yearEstablished}
-              </p>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mt-1">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="system-label">{item.system}</span>
+                <span
+                  className={`status-label ${item.status === "In Production" ? "status-label--complete" : ""}`}
+                >
+                  {item.status}
+                </span>
+                <span className="font-mono text-[10px] text-slate-500">{item.yearEstablished}</span>
+              </div>
+
+              <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 leading-tight">
                 {item.title}
               </h1>
-              <p className="text-xl font-semibold text-slate-900 mt-2">
-                {item.priceEstimate ?? item.priceRange}
-              </p>
+
+              <div className="mt-2 flex items-center justify-between gap-4">
+                <p className="font-semibold text-xs text-slate-600 uppercase tracking-wider">
+                  Crafted by {item.maker}
+                </p>
+                <span className="font-mono text-lg font-bold text-slate-900">
+                  {item.priceEstimate ?? item.priceRange}
+                </span>
+              </div>
             </div>
 
-            <p className="text-sm text-slate-600 leading-relaxed">
+            {/* Durability Rating with Sharp Stars */}
+            <div className="flex items-center gap-3 border-y border-slate-200 py-2.5">
+              <span className="font-mono text-xs uppercase font-bold text-slate-500">
+                Durability:
+              </span>
+              <SharpStarRating rating={avgDurability} size={15} />
+              <span className="font-mono text-[11px] text-slate-500">/ 5.00</span>
+            </div>
+
+            <p className="text-sm text-slate-700 leading-relaxed">
               {item.desc}
             </p>
 
             {/* Where to Buy Online Section */}
-            <div className="space-y-2.5 pt-2">
-              <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <div className="space-y-2 pt-2">
+              <h2 className="font-mono text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Available at
               </h2>
               <div className="flex flex-wrap gap-2">
@@ -141,39 +169,39 @@ export default async function ItemDetailPage({
                     platform={r.platform}
                     itemSlug={item.slug}
                     location="item_detail_buy"
-                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-200 bg-slate-50 hover:bg-white hover:border-slate-400 text-xs font-medium text-slate-900 transition-all"
+                    className="platform-link"
                   >
                     <span>{r.platform}</span>
-                    {r.price && <strong className="font-semibold">{r.price}</strong>}
+                    {r.price && <strong className="font-mono font-bold text-slate-900">({r.price})</strong>}
                     <span>→</span>
                   </TrackedExternalLink>
                 ))}
               </div>
             </div>
 
-            {/* Quick Specs Table */}
-            <div className="border-t border-slate-100 pt-5 space-y-2 text-xs">
-              <h2 className="font-semibold text-slate-400 uppercase tracking-wider mb-2">
+            {/* Quick Specs Grid */}
+            <div className="border-t border-slate-200 pt-4 space-y-2 text-xs">
+              <h2 className="font-mono font-bold text-slate-500 uppercase tracking-wider mb-2">
                 Specifications
               </h2>
               <div className="grid grid-cols-2 gap-2 text-slate-700">
-                <div className="p-2.5 rounded bg-slate-50 border border-slate-100">
-                  <span className="text-slate-400 block text-[11px]">System</span>
-                  <span className="font-medium text-slate-900">{item.system}</span>
+                <div className="p-2 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
+                  <span className="text-slate-500 font-mono block text-[10px] uppercase">System</span>
+                  <span className="font-bold text-slate-900">{item.system}</span>
                 </div>
-                <div className="p-2.5 rounded bg-slate-50 border border-slate-100">
-                  <span className="text-slate-400 block text-[11px]">Status</span>
-                  <span className="font-medium text-slate-900">{item.status}</span>
+                <div className="p-2 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
+                  <span className="text-slate-500 font-mono block text-[10px] uppercase">Status</span>
+                  <span className="font-bold text-slate-900">{item.status}</span>
                 </div>
-                <div className="p-2.5 rounded bg-slate-50 border border-slate-100">
-                  <span className="text-slate-400 block text-[11px]">Lifespan</span>
-                  <span className="font-medium text-slate-900">
+                <div className="p-2 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
+                  <span className="text-slate-500 font-mono block text-[10px] uppercase">Expected Lifespan</span>
+                  <span className="font-bold text-slate-900">
                     {item.variants[0]?.expectedLifespan ?? "25+ Years"}
                   </span>
                 </div>
-                <div className="p-2.5 rounded bg-slate-50 border border-slate-100">
-                  <span className="text-slate-400 block text-[11px]">Warranty</span>
-                  <span className="font-medium text-slate-900">
+                <div className="p-2 border border-slate-200 bg-slate-50 shadow-[2px_2px_0_#f1f5f9]">
+                  <span className="text-slate-500 font-mono block text-[10px] uppercase">Warranty</span>
+                  <span className="font-bold text-slate-900">
                     {item.variants[0]?.warranty ?? "Lifetime Spares"}
                   </span>
                 </div>
@@ -184,34 +212,46 @@ export default async function ItemDetailPage({
 
         {/* Care & Maintenance */}
         {item.careGuide && (
-          <section className="border-t border-slate-100 pt-8 space-y-3 max-w-3xl">
-            <h2 className="text-lg font-bold text-slate-900">Care & Maintenance</h2>
-            <p className="text-sm text-slate-600 leading-relaxed">{item.careGuide}</p>
+          <section className="border border-slate-300 bg-white p-6 sm:p-8 shadow-[4px_4px_0_#cbd5e1] space-y-3 max-w-3xl">
+            <div className="flex items-center gap-2">
+              <SharpSparkle size={16} fill="#f59e0b" />
+              <h2 className="font-display text-xl font-bold text-slate-900">
+                Longevity & Care Lifecycle
+              </h2>
+            </div>
+            <p className="text-sm text-slate-700 leading-relaxed">{item.careGuide}</p>
           </section>
         )}
 
         {/* Variants / Models List */}
         {item.variants.length > 1 && (
-          <section className="border-t border-slate-100 pt-8 space-y-4">
-            <h2 className="text-lg font-bold text-slate-900">Models & Editions</h2>
+          <section className="space-y-4">
+            <h2 className="font-display text-xl font-bold text-slate-900">
+              Models & Editions ({item.variants.length})
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {item.variants.map((v) => (
-                <div key={v.variantNumber} className="simple-card p-4 space-y-2 text-xs">
+                <div
+                  key={v.variantNumber}
+                  className="border border-slate-300 bg-white p-4 space-y-2 text-xs shadow-[3px_3px_0_#e2e8f0]"
+                >
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-900">{v.title}</span>
-                    {v.price && <span className="font-semibold text-slate-900">{v.price}</span>}
+                    <span className="font-bold text-slate-900">{v.title}</span>
+                    <SharpStarRating rating={v.durabilityScore} size={11} />
                   </div>
-                  <p className="text-slate-500">{v.material}</p>
-                  <p className="text-slate-400 text-[11px]">Lifespan: {v.expectedLifespan}</p>
+                  <p className="text-slate-600">{v.material}</p>
+                  <p className="font-mono text-slate-500 text-[11px]">
+                    Lifespan: <strong className="text-slate-900">{v.expectedLifespan}</strong> · {v.warranty}
+                  </p>
                   {v.amazonUrl && (
                     <TrackedExternalLink
                       href={v.amazonUrl}
                       platform="Amazon.in"
                       itemSlug={item.slug}
                       location="variant_link"
-                      className="inline-block font-semibold text-slate-900 hover:underline pt-1"
+                      className="inline-block font-mono font-bold text-slate-900 hover:underline pt-1"
                     >
-                      View on Amazon.in →
+                      View on Amazon.in ({v.price ?? "Check Price"}) →
                     </TrackedExternalLink>
                   )}
                 </div>

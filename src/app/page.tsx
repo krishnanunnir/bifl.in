@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { ItemCard } from "@/components/item-card";
 import { CATEGORIES } from "@/lib/catalog/categories";
 import { items as allItems, getTopPicks, getItemsByCategory } from "@/data/items";
+import { SharpSparkle } from "@/components/sharp-star";
 import {
   SITE_NAME,
   SITE_TITLE,
@@ -72,23 +73,27 @@ export default function Home() {
       <SiteHeader />
 
       <main id="main-content" className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12 space-y-16">
-        {/* Minimal Hero Header */}
+        {/* Sharp Editorial Hero Header */}
         <section className="space-y-4 max-w-3xl">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
+          <div className="flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-slate-500">
+            <SharpSparkle size={13} fill="#f59e0b" />
+            <span>The Indian Heirloom Catalog</span>
+          </div>
+          <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-slate-900 leading-tight">
             Buy It For Life (India)
           </h1>
-          <p className="text-base text-slate-600 leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
             A curated index of durable, repairable, and generational goods built to last in India.
             Cast iron, pure bronze, full-grain leather, mechanical watches, and heavy tools with lifetime spares.
           </p>
 
-          {/* Clean Category Navigation Pills */}
-          <div className="pt-2 flex flex-wrap items-center gap-2">
+          {/* Sharp Category Navigation Pills */}
+          <div className="pt-2 flex flex-wrap items-center gap-2.5">
             {CATEGORIES.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/category/${cat.slug}`}
-                className="cat-pill"
+                className="cat-pill-sharp"
               >
                 <span>{cat.icon}</span>
                 <span>{cat.name}</span>
@@ -99,27 +104,30 @@ export default function Home() {
 
         {/* Top Picks Section */}
         <section aria-labelledby="top-picks-heading">
-          <div className="flex items-center justify-between mb-6 pb-2 border-b border-slate-100">
+          <div className="flex items-end justify-between mb-6 pb-2.5 border-b border-slate-200">
             <div>
-              <h2 id="top-picks-heading" className="text-xl font-bold text-slate-900">
-                Top Picks
-              </h2>
-              <p className="text-xs text-slate-500">Highest rated generational essentials</p>
+              <div className="flex items-center gap-1.5">
+                <SharpSparkle size={14} fill="#f59e0b" />
+                <h2 id="top-picks-heading" className="font-display text-2xl font-bold text-slate-900">
+                  Top Generational Picks
+                </h2>
+              </div>
+              <p className="text-xs text-slate-500 font-mono mt-0.5">Highest rated generational essentials</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {topPicks.slice(0, 6).map((item, idx) => (
-              <ItemCard key={item.slug} item={item} priority={idx < 3} position={idx + 1} />
+              <ItemCard key={item.slug} item={item} priority={idx < 2} position={idx + 1} />
             ))}
           </div>
         </section>
 
         {/* Category-by-Category Sections */}
         <section className="space-y-16" aria-labelledby="categories-heading">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-            <h2 id="categories-heading" className="text-xl font-bold text-slate-900">
-              Browse by Category
+          <div className="flex items-center justify-between pb-2.5 border-b border-slate-200">
+            <h2 id="categories-heading" className="font-display text-2xl font-bold text-slate-900">
+              Browse by Discipline
             </h2>
           </div>
 
@@ -130,22 +138,22 @@ export default function Home() {
                 <div className="flex items-end justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{category.icon}</span>
-                      <h3 className="text-lg font-bold text-slate-900">{category.name}</h3>
+                      <span className="text-xl">{category.icon}</span>
+                      <h3 className="font-display text-xl font-bold text-slate-900">{category.name}</h3>
                     </div>
                     <p className="text-xs text-slate-500 mt-0.5">{category.tagline}</p>
                   </div>
 
                   <Link
                     href={`/category/${category.slug}`}
-                    className="text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors"
+                    className="font-mono text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-black underline underline-offset-4"
                   >
                     View all {categoryItems.length} items →
                   </Link>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {categoryItems.slice(0, 3).map((item) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {categoryItems.slice(0, 2).map((item) => (
                     <ItemCard key={item.slug} item={item} />
                   ))}
                 </div>

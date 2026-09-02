@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CategoryMeta, Item } from "@/lib/catalog/types";
 import { TrackedExternalLink } from "@/components/tracked-external-link";
+import { SharpStarRating } from "@/components/sharp-star";
 
 export function CategoryClient({
   category,
@@ -75,7 +76,7 @@ export function CategoryClient({
       {/* Simple, Clean Sidebar Filters */}
       <aside className="space-y-6 h-fit sticky top-20 text-sm">
         <div>
-          <h3 className="font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2.5">
+          <h3 className="font-mono font-bold text-xs text-slate-500 uppercase tracking-wider mb-2.5">
             Status
           </h3>
           <div className="space-y-1.5 text-xs text-slate-700">
@@ -94,8 +95,8 @@ export function CategoryClient({
           </div>
         </div>
 
-        <div className="border-t border-slate-100 pt-5">
-          <h3 className="font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2.5">
+        <div className="border-t border-slate-200 pt-5">
+          <h3 className="font-mono font-bold text-xs text-slate-500 uppercase tracking-wider mb-2.5">
             Price
           </h3>
           <div className="space-y-1.5 text-xs text-slate-700">
@@ -121,8 +122,8 @@ export function CategoryClient({
         </div>
 
         {availableMaterials.length > 0 && (
-          <div className="border-t border-slate-100 pt-5">
-            <h3 className="font-semibold text-xs text-slate-400 uppercase tracking-wider mb-2.5">
+          <div className="border-t border-slate-200 pt-5">
+            <h3 className="font-mono font-bold text-xs text-slate-500 uppercase tracking-wider mb-2.5">
               Material
             </h3>
             <div className="space-y-1.5 text-xs text-slate-700">
@@ -152,7 +153,7 @@ export function CategoryClient({
           </div>
         )}
 
-        <div className="border-t border-slate-100 pt-4">
+        <div className="border-t border-slate-200 pt-4">
           <button
             onClick={() => {
               setStatusFilter("All");
@@ -160,7 +161,7 @@ export function CategoryClient({
               setMaterialFilter("all");
               setSortBy("score");
             }}
-            className="text-xs text-slate-500 hover:text-slate-900 underline cursor-pointer"
+            className="text-xs font-mono font-bold text-slate-600 hover:text-slate-900 underline cursor-pointer"
           >
             Reset Filters
           </button>
@@ -170,14 +171,14 @@ export function CategoryClient({
       {/* Product Grid Area */}
       <div className="space-y-4">
         {/* Results Count & Sort */}
-        <div className="flex items-center justify-between gap-4 pb-3 border-b border-slate-100 text-xs text-slate-500">
-          <span>{filteredItems.length} products found</span>
+        <div className="flex items-center justify-between gap-4 pb-3 border-b border-slate-200 text-xs text-slate-500">
+          <span className="font-mono">{filteredItems.length} products found</span>
           <div className="flex items-center gap-2">
-            <span>Sort:</span>
+            <span className="font-mono">Sort:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 font-medium focus:outline-none"
+              className="rounded-none border border-slate-300 bg-white px-2 py-1 text-xs text-slate-900 font-medium focus:outline-none"
             >
               <option value="score">Top Rated</option>
               <option value="price-asc">Price: Low to High</option>
@@ -187,77 +188,108 @@ export function CategoryClient({
         </div>
 
         {filteredItems.length === 0 ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
-            <p className="text-sm font-medium text-slate-900">No products match this selection</p>
+          <div className="border border-slate-200 bg-white p-12 text-center shadow-[4px_4px_0_#e2e8f0]">
+            <p className="text-sm font-bold text-slate-900">No products match this selection</p>
             <button
               onClick={() => {
                 setStatusFilter("All");
                 setPriceFilter("all");
                 setMaterialFilter("all");
               }}
-              className="mt-2 text-xs text-slate-600 underline cursor-pointer"
+              className="mt-2 text-xs font-mono text-slate-600 underline cursor-pointer"
             >
               Clear filters
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {filteredItems.map((item) => (
-              <article
-                key={item.slug}
-                className="simple-card p-4 flex flex-col justify-between"
-              >
-                <div>
-                  <Link href={`/items/${item.slug}`} className="block relative aspect-4/3 overflow-hidden rounded-lg bg-slate-50 border border-slate-100 mb-3">
+          <div className="grid grid-cols-1 gap-5">
+            {filteredItems.map((item) => {
+              const avgRating =
+                item.variants && item.variants.length > 0
+                  ? item.variants.reduce((acc, v) => acc + (v.durabilityScore ?? 4.8), 0) /
+                    item.variants.length
+                  : 4.85;
+
+              return (
+                <article key={item.slug} className="series-card group">
+                  <Link
+                    href={`/items/${item.slug}`}
+                    className="series-cover-link"
+                    aria-label={`View ${item.title}`}
+                  >
                     <Image
+                      className="series-cover"
                       src={item.image}
                       alt={item.title}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 50vw"
-                      className="object-cover"
+                      width={240}
+                      height={340}
+                      sizes="(max-width: 640px) 104px, 136px"
                     />
                   </Link>
 
-                  <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                    <span>{item.maker}</span>
-                    <span className="font-semibold text-slate-900">{item.priceEstimate ?? item.priceRange}</span>
+                  <div className="min-w-0 flex flex-col justify-between h-full">
+                    <div>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="system-label">{item.system}</span>
+                          <span
+                            className={`status-label ${item.status === "In Production" ? "status-label--complete" : ""}`}
+                          >
+                            {item.status}
+                          </span>
+                        </div>
+                        <span className="shrink-0 font-mono text-[10px] tracking-wide text-slate-500">
+                          {item.yearEstablished}
+                        </span>
+                      </div>
+
+                      <h2 className="font-display mt-2 text-xl font-bold leading-snug tracking-tight text-slate-900 group-hover:text-slate-700 sm:text-2xl sm:leading-tight">
+                        <Link href={`/items/${item.slug}`}>{item.title}</Link>
+                      </h2>
+
+                      <div className="mt-1 flex items-center justify-between gap-2 text-xs">
+                        <span className="font-semibold text-slate-600">By {item.maker}</span>
+                        <span className="font-mono font-bold text-slate-900">
+                          {item.priceEstimate ?? item.priceRange}
+                        </span>
+                      </div>
+
+                      <p className="mt-2 text-xs leading-relaxed text-slate-600 line-clamp-2 sm:text-sm">
+                        {item.desc}
+                      </p>
+                    </div>
+
+                    <div className="mt-3.5 flex flex-wrap items-center gap-1.5">
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 mr-0.5">
+                        Buy:
+                      </span>
+                      {item.retailLinks.slice(0, 3).map((r) => (
+                        <TrackedExternalLink
+                          key={r.platform}
+                          href={r.url}
+                          platform={r.platform}
+                          itemSlug={item.slug}
+                          location="category_card"
+                          className="platform-link"
+                        >
+                          <span>{r.platform}</span>
+                          {r.price && (
+                            <span className="text-[10px] text-slate-400">({r.price})</span>
+                          )}
+                        </TrackedExternalLink>
+                      ))}
+                    </div>
                   </div>
 
-                  <h3 className="font-semibold text-slate-900 text-sm leading-snug">
-                    <Link href={`/items/${item.slug}`}>{item.title}</Link>
-                  </h3>
-
-                  <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
-                    {item.desc}
-                  </p>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {item.retailLinks.slice(0, 3).map((r) => (
-                      <TrackedExternalLink
-                        key={r.platform}
-                        href={r.url}
-                        platform={r.platform}
-                        itemSlug={item.slug}
-                        location="category_card"
-                        className="retailer-pill"
-                      >
-                        <span>{r.platform}</span>
-                        {r.price && <span className="text-[10px] text-slate-400">· {r.price}</span>}
-                      </TrackedExternalLink>
-                    ))}
+                  <div className="series-books-link-wrap">
+                    <SharpStarRating rating={avgRating} />
+                    <Link className="series-books-link" href={`/items/${item.slug}`}>
+                      View models & specs ({item.variants?.length ?? 1}) →
+                    </Link>
                   </div>
-
-                  <Link
-                    href={`/items/${item.slug}`}
-                    className="text-xs font-semibold text-slate-700 hover:text-slate-900"
-                  >
-                    Specs →
-                  </Link>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </div>
